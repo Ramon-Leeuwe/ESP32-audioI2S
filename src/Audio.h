@@ -507,8 +507,8 @@ private:
     int16_t         m_curSample = 0;
     uint16_t        m_datamode = 0;                 // Statemaschine
     uint16_t        m_streamTitleHash = 0;          // remember streamtitle, ignore multiple occurence in metadata
-    uint16_t        m_timeout_ms = 250;
-    uint16_t        m_timeout_ms_ssl = 2700;
+    uint16_t        m_timeout_ms = 2500;            // Timeout for HTTP requests
+    uint16_t        m_timeout_ms_ssl = 2700;        // Timeout for HTTPS requests
     uint8_t         m_flacBitsPerSample = 0;        // bps should be 16
     uint8_t         m_flacNumChannels = 0;          // can be read out in the FLAC file header
     uint32_t        m_flacSampleRate = 0;           // can be read out in the FLAC file header
