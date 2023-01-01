@@ -152,6 +152,7 @@ protected:
     bool     m_f_start          = true;
     bool     m_f_init           = false;
     bool     m_f_psram          = false;    // PSRAM is available (and used...)
+    bool     m_skipFilters      = false;
 };
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -204,6 +205,7 @@ public:
     void setI2SCommFMT_LSB(bool commFMT);
     int getCodec() {return m_codec;}
     const char *getCodecname() {return codecname[m_codec];}
+    void setSkipFilters(bool skip); // Skip filters or not
 
 private:
 

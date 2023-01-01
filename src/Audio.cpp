@@ -4123,6 +4123,10 @@ void Audio::setI2SCommFMT_LSB(bool commFMT) {
     i2s_driver_install  ((i2s_port_t)m_i2s_num, &m_i2s_config, 0, NULL);
 }
 //---------------------------------------------------------------------------------------------------------------------
+ void Audio::setSkipFilters(bool skip) {
+    m_skipFilters = skip;
+ }
+
 bool Audio::playSample(int16_t sample[2]) {
 
     if (getBitsPerSample() == 8) { // Upsample from unsigned 8 bits to signed 16 bits
@@ -4130,17 +4134,23 @@ bool Audio::playSample(int16_t sample[2]) {
         sample[RIGHTCHANNEL] = ((sample[RIGHTCHANNEL] & 0xff) -128) << 8;
     }
 
-    sample[LEFTCHANNEL]  = sample[LEFTCHANNEL]  >> 1; // half Vin so we can boost up to 6dB in filters
-    sample[RIGHTCHANNEL] = sample[RIGHTCHANNEL] >> 1;
+    uint32_t s32;
 
-    // Filterchain, can commented out if not used
-    sample = IIR_filterChain0(sample);
-    sample = IIR_filterChain1(sample);
-    sample = IIR_filterChain2(sample);
-    //-------------------------------------------
+    if (m_skipFilters) {
+        s32 = (sample[LEFTCHANNEL] << 16) | (sample[RIGHTCHANNEL] & 0xffff);
+    } else {
+        sample[LEFTCHANNEL]  = sample[LEFTCHANNEL]  >> 1; // half Vin so we can boost up to 6dB in filters
+        sample[RIGHTCHANNEL] = sample[RIGHTCHANNEL] >> 1;
 
-    uint32_t s32 = Gain(sample); // vosample2lume;
+        // Filterchain, can commented out if not used
+        sample = IIR_filterChain0(sample);
+        sample = IIR_filterChain1(sample);
+        sample = IIR_filterChain2(sample);
+        //-------------------------------------------
 
+        s32 = Gain(sample); // vosample2lume;
+    }
+    
     if(audio_process_i2s){
         // process audio sample just before writing to i2s
         bool continueI2S = false;
